@@ -1,0 +1,20 @@
+## Interface: 100207
+## Title: Treant Speak
+## Author: FILLUP
+## Version: 0.0.1
+## Notes: Speak in the language of the superior race: Treants.
+## IconTexture: Interface\AddOns\Treant_Speak\Resources\treant
+## OptionalDeps: 
+## RequiredDeps: 
+## SavedVariables: treantSettings
+## DefaultState: Enabled
+
+libs\AceComm-3.0\AceComm-3.0.xml
+libs\AceSerializer-3.0\AceSerializer-3.0.xml
+libs\LibStud.lua
+
+playerSettings.lua
+tree_display.lua
+translations.lua
+Tree.lua
+tree.xml

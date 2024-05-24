@@ -68,12 +68,24 @@ function setTranslation(partyMode, whisperTo)
 		fixedTarget=whisperTo
 		translateToParty=false
 		
-		local localizedClass, classFileName, classID = UnitClass(fixedTarget)
-		local classColor = Class_Colors[classFileName]
-		local nameColor = string.format("|cff%02x%02x%02x",
-		classColor.r * 255, classColor.g * 255, classColor.b * 255)
-		
-		title:SetText(GREEN.."Translating to ".. nameColor .. fixedTarget)
+		---SOOO APPARENTLYYY I gotta go through this whole mess to get target class if they aren't in party.
+		--Wow! So awesome!
+		 local targetGUID = UnitGUID("target")
+        if targetGUID then
+            local playerLocation = PlayerLocation:CreateFromGUID(targetGUID)
+            local className, classFileName, classID = C_PlayerInfo.GetClass(playerLocation)
+            if classFileName then
+                local cColor = Class_Colors[classFileName]
+                local nameColor = string.format("|cff%02x%02x%02x",
+                cColor.r * 255, cColor.g * 255, cColor.b * 255)
+                
+                title:SetText(GREEN.."Translating to ".. nameColor .. fixedTarget)
+            else
+                title:SetText(GREEN.."Translating to ".. fixedTarget)
+            end
+        else
+            title:SetText(GREEN.."Translating to ".. fixedTarget)
+        end
 	else
 		fixedTarget=nil
 		translateToParty=false

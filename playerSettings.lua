@@ -1,6 +1,8 @@
 -- Function to handle the ADDON_LOADED event
 settingKeys = {"speakLanguageInParty","displayUntranslatedMessages", "displayTranslated"}
 
+
+
 local function OnAddonLoaded(event, addonName, ...)
     -- Check if the loaded addon is your addon
 	local str=...

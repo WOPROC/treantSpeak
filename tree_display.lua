@@ -4,7 +4,7 @@ checkBoxes = {}
 
 
 ---------------------------- CREATING UI -----------------------------------------------------
-local frame = CreateFrame("Frame", "Tree Translator", UIParent, "BasicFrameTemplateWithInset")
+frame = CreateFrame("Frame", "Tree Translator", UIParent, "BasicFrameTemplateWithInset")
 frame:SetSize(300, 200)
 frame:SetPoint("CENTER")
 frame:SetMovable(true)

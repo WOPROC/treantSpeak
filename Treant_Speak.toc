@@ -9,12 +9,12 @@
 ## SavedVariables: treantSettings
 ## DefaultState: Enabled
 
+libs\LibStud\LibStub.lua
 libs\AceComm-3.0\AceComm-3.0.xml
 libs\AceSerializer-3.0\AceSerializer-3.0.xml
-libs\LibStud.lua
+
 
 playerSettings.lua
 tree_display.lua
 translations.lua
 Tree.lua
-tree.xml

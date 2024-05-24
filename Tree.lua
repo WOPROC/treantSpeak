@@ -165,6 +165,8 @@ local function treantHelp(str)
 		print(BLUE.."Do /ts p to translate to your party (Party Mode)")
 		print(BLUE.."Do /ts without a target to stop all translation methods.")
 		print(RED.."~----------------------~")
+	else
+		frame:Show()
 	end
 end
 

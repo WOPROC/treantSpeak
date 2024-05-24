@@ -17,4 +17,4 @@ playerSettings.lua
 tree_display.lua
 translations.lua
 Tree.lua
-tree.xml
+

@@ -43,10 +43,6 @@ local GRAY = "|cFF808080"
 
 ----------------------------
 local treeSpeak=false --We are speaking in tree
-local isTranslating=false --We are able to understand tree
-
-translateToParty = false
-fixedTarget=nil
 
 
 
@@ -68,8 +64,6 @@ function setTranslation(partyMode, whisperTo)
 		fixedTarget=whisperTo
 		translateToParty=false
 		
-		---SOOO APPARENTLYYY I gotta go through this whole mess to get target class if they aren't in party.
-		--Wow! So awesome!
 		 local targetGUID = UnitGUID("target")
         if targetGUID then
             local playerLocation = PlayerLocation:CreateFromGUID(targetGUID)
@@ -197,6 +191,7 @@ end)
 function TreeComm:TreeSendMsg(channel, player, ...)
     local message = serial:Serialize({...})
     self:SendCommMessage("treeTalk", message, channel, player)
+	print("MSG SENT")
 end
 
 --Send a prioritized message over the addon channel
@@ -208,7 +203,7 @@ end
 --Receive a message over the addon channel
 function TreeComm:TreeReceiveMsg(prefix, message, distribution, sender)
 
-
+		print("MSG RECEIVED")
 		local didWin, t = serial:Deserialize(message)
 		--Unpack the message (so we can read it)
 		txt = unpack(t)
@@ -232,7 +227,7 @@ end
 
 function onChatMessage(self, event, message, sender, ...)
 
-
+	print("CHAT MSG")
 	local senderName = strsplit("-", sender)
 	local words = nil
 	for str in message:gmatch("%S+") do
@@ -241,8 +236,9 @@ function onChatMessage(self, event, message, sender, ...)
 	end
 	--Check to see who the sender is. 
 	if words=="[Treant]" then
-		if senderName ~= UnitName("player") and isTranslating then
-			
+		print("SPEAKETH TREE")
+		if senderName ~= UnitName("player") and isEligibleToSpeakOrTranslate() then
+			print("NOT ME, GOOD TO GO!")
 			TreeComm:TreeSendMsg("WHISPER",senderName, "RQTRANSLATE") 
 			if treantSettings["displayUntranslatedMessages"] then
 				return false --displays the message

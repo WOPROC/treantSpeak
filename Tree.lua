@@ -42,145 +42,253 @@ local GRAY = "|cFF808080"
 
 
 ----------------------------
-local treeSpeak=false --We are speaking in tree
+currentLanguage = languages[1];
+
+isBroken = false;
+
+local translateToParty=false
+local fixedTarget=nil
 
 
-
-
-
-------------------------------------
-function setTranslation(partyMode, whisperTo)
-	if not treeSpeak then
-		fixedTarget=nil
-		translateToParty=false
-		partyModeb:SetText("Party Mode: Off")
-		title:SetText("Treant Speak - Translator")
-	elseif partyMode then
-		fixedTarget=nil
-		translateToParty=true
-		partyModeb:SetText("Party Mode: On")
-		title:SetText(GREEN.."Treant Speak - Translator")
-	elseif whisperTo~= nil then
-		fixedTarget=whisperTo
-		translateToParty=false
-		
-		 local targetGUID = UnitGUID("target")
-        if targetGUID then
-            local playerLocation = PlayerLocation:CreateFromGUID(targetGUID)
-            local className, classFileName, classID = C_PlayerInfo.GetClass(playerLocation)
-            if classFileName then
-                local cColor = Class_Colors[classFileName]
-                local nameColor = string.format("|cff%02x%02x%02x",
-                cColor.r * 255, cColor.g * 255, cColor.b * 255)
-                
-                title:SetText(GREEN.."Translating to ".. nameColor .. fixedTarget)
-            else
-                title:SetText(GREEN.."Translating to ".. fixedTarget)
-            end
-        else
-            title:SetText(GREEN.."Translating to ".. fixedTarget)
-        end
-	else
-		fixedTarget=nil
-		translateToParty=false
-		partyModeb:SetText("Party Mode: Off")
-		title:SetText(GREEN.."Treant Speak - Translator")
-	end
-
-end
-
-
-
-
-
-local function hasBuff(buffName)
-    -- Iterate through the player's buffs
-    for i = 1, 20 do -- If they have moer than this then they lose i guess
-        local name, _, _, _, _, _, _, _, _, spellId = UnitBuff("player", i)
-        if name and name == buffName then
-            -- Buff found
-            return true
-        end
+function capitalizeFirstLetter(str)
+    if str == nil or str == "" then
+        return str
     end
-    -- Buff not found
-    return false
+    local firstLetter = string.sub(str, 1, 1)
+    local restOfString = string.sub(str, 2)
+    return string.upper(firstLetter) .. restOfString
 end
 
 
-local function isEligibleToSpeakOrTranslate()
-	if hasBuff("Mark of the Wild") or hasBuff("Treant Form") or hasBuff("Marca de lo Salvaje") or hasBuff("Don de lo salvaje") then
-		return true
+
+function contains(hashTable, value)
+
+	for i, val in ipairs(hashTable) do
+		if val == value then
+			return true
+		end
 	end
 	return false
 
 end
----------------------------------------
------Slash Commands ------------------
-local function treantSpeak(str)
-		if isEligibleToSpeakOrTranslate() ==false then
-			treeSpeak=false
-			isTranslating=false
-			print("You cannot speak in tree!")
-			setTranslation(false,nil)
-		else
-			if treeSpeak == true then
-				print("You are no longer speaking in treant.")
-				lastDecryptedMessage=""
-				treeSpeak=false
-				isTranslating=false
-				title:SetText("Treant Speak - Translator")
-				setTranslation(false,nil)
-			else
-				print("You are now speaking in treant.")
-				treeSpeak=true
-				isTranslating=false
-				title:SetText(GREEN.."Treant Speak - Translator")
-			end
-		end
+
+
+local function playerHasBuff(buffTable)
+    for i = 1, 40 do
+        local name = UnitBuff("player", i)
+        if name and contains(buffTable,name) then
+            return true
+        end
+    end
+    return false
 end
 
-SLASH_TreantSpeak1 = "/tree";
-SlashCmdList.TreantSpeak = treantSpeak;
 
-local function translationGame(str)
+local function isEligibleToSpeakOrTranslate(lan)
+	lan = string.upper(lan)
+	if lan~='FELINE' and lan~='BEAR' and lan~='TREANT' then
+		return true
+	end
 	
-	if not treeSpeak then
-		setTranslation(false, nil)
-	elseif str=="p" then
-		setTranslation(true, nil)
-	else
-		if UnitIsPlayer("target") then
-			setTranslation(false, UnitName("target"))
+	validBuffs = {"Mark of the Wild", "Marca de lo Salvaje"}
+	if lan == languages[2] then
+		table.insert(validBuffs,"Treant Form")	
+	elseif lan== languages[4] then
+		table.insert(validBuffs,"Cat Form")
+	elseif lan==languages[5] then
+		table.insert(validBuffs,"Bear Form")
+	end
+	
+	return playerHasBuff(validBuffs)
+end
+
+
+function setTranslation(isParty, target)
+
+	if currentLanguage==languages[1] then
+		translateToParty=false
+		fixedTarget=nil
+		title:SetText("Treant Speak+: Translator")
+		partyModeb:SetText("Party Mode: Off")
+		UIDropDownMenu_SetText(dropdown, "Pick language")
+		isBroken=false
+		return
+	end
+	brokenNess=''
+	if isBroken then
+		brokenNess="Broken "
+	end
+	if not isParty and target==nil then
+		translateToParty=false
+		fixedTarget=nil
+		partyModeb:SetText("Party Mode: Off")
+		title:SetText(GREEN.."Speaking: "..brokenNess..currentLanguage)
+		UIDropDownMenu_SetText(dropdown, "Pick language")
+	elseif isParty then
+		fixedTarget=nil
+		if translateToParty or not IsInGroup() then
+			translateToParty=false
+			partyModeb:SetText("Party Mode: Off")
 		else
-			setTranslation(false,nil)
+			translateToParty=true
+			partyModeb:SetText("Party Mode: On")
 		end
+	elseif target~=nil then
+		fixedTarget=target
+		local classToken = GetPlayerInfoByGUID(UnitGUID('target'))
+
+		local classColor = Class_Colors[string.upper(classToken):gsub("%s+", "")]
+			local nameColor = string.format("|cff%02x%02x%02x",
+				classColor.r * 255, classColor.g * 255, classColor.b * 255)
+		
+		title:SetText(GREEN.."Translating "..currentLanguage..": "..nameColor..fixedTarget)
+		translateToParty=false
+		partyModeb:SetText("Party Mode: Off")
+	else
+		translateToParty=false
+		fixedTarget=nil
+		partyModeb:SetText("Party Mode: Off")
+		title:SetText(GREEN.."Speaking: "..brokenNess..currentLanguage)
+		UIDropDownMenu_SetText(dropdown, "Pick language")
 	end
 
 end
 
-SLASH_translateTo1 = "/ts"
-SlashCmdList.translateTo = translationGame;
+-----------------------------------------------------------
+---Slash Commands
 
-local function treantHelp(str)
-	str=string.lower(str)
-	if str=="help" then
-		print(RED.."~---TREANT HELP DESK---~")
-		print("Do /tree to toggle on Treant Language.")
-		print(BLUE.."Do /treant to open up the translation window")
-		print(BLUE.."Do /ts with a target to select a whisper target")
-		print(BLUE.."Do /ts p to translate to your party (Party Mode)")
-		print(BLUE.."Do /ts without a target to stop all translation methods.")
-		print(RED.."~----------------------~")
+
+
+function applyLanguage(str)
+
+
+	if string.lower(str)=='tree' then
+		str='TREANT'
+	elseif string.lower(str)=='cat' then
+		str='FELINE'
+	end
+	
+	if str=="" or currentLanguage==string.upper(str) or string.upper(str)=="NONE" then
+		
+		if currentLanguage ~= languages[1] then
+			print(RED.."You are no longer speaking a language.")
+		end
+		currentLanguage=languages[1]
+		setTranslation(false,nil)
+		return
+	end
+	
+	
+	if contains(languages, string.upper(str)) and isEligibleToSpeakOrTranslate(string.upper(str)) then
+		brokenNess=''
+		if isBroken then
+			brokenNess="Broken "
+		end
+		currentLanguage=string.upper(str)
+		title:SetText(GREEN.."Speaking: "..brokenNess..currentLanguage)
+		UIDropDownMenu_SetText(dropdown, capitalizeFirstLetter(string.lower(str)))
+		if not frame:IsVisible() then
+			print(GREEN.."You are now speaking "..brokenNess.. capitalizeFirstLetter(string.lower(str)))
+		end
+	elseif contains(languages, string.upper(str)) then
+		if currentLanguage==languages[1] and treantSettings['showErrorMsgs'] then
+			print(RED.."You cannot speak " .. capitalizeFirstLetter(string.lower(str)) .. "!")
+		else
+			applyLanguage("NONE")
+		end
+		setTranslation(false,nil)
+	else 
+		print(BLUE.."This language does not exist.")
+		setTranslation(false,nil)
+	end
+	
+	
+
+end
+
+local function TreantSpeak()
+	applyLanguage("TREANT")
+end
+
+local function makeBroken()
+	if isBroken then
+		isBroken=false
+		title:SetText(GREEN.."Speaking: "..currentLanguage)
+	else
+		title:SetText(GREEN.."Speaking: Broken "..currentLanguage)
+		isBroken=true
+	end
+
+end
+
+local function treeHelp(str)
+
+	if string.lower(str)=="help" then
+		print(CYAN.."~--TREANT HELP DESK--~")
+		print(BLUE.."/tree to speak in treant")
+		print(BLUE.."/lan {language} to speak in a desired language.")
+		print(MAGENTA.."=> (Example: /lan tree to speak in treant")
+		print(BLUE.."/treant ts to see translation commands")
+		print(BLUE.."/treant lan to see language commands.")
+	elseif string.lower(str)=="lan" then
+		print(CYAN.."~--TREANT LANGUAGE DESK--~")
+		print(ORANGE.."/broken to speak in a broken version of your current language. Not available for all languages.")
+		print(RED.."~=Available Languages=~")
+		print(BLUE.."~> Treant".. ORANGE.." (broken available)")
+		print(BLUE.."~> Zombie")
+		print(BLUE.."~> Cat")
+		print(BLUE.."~> Bear")
+	elseif string.lower(str)=="ts" then
+		print(CYAN.."~--TREANT TRANSLATION DESK--~")
+		print(BLUE.."/ts with a target to whisper a translation to the target.")
+		print(BLUE.."/ts without a target to stop whisper translating.")
+		print(BLUE.."/ts p or /ts party to translate to your party.")
 	else
 		frame:Show()
 	end
+	
+
 end
 
-SLASH_treant1 = "/treant"
-SlashCmdList.treant = treantHelp
 
------------------------------------------------------------
+local function translationFun(str)
+	if str=="" then
+		if UnitIsPlayer('target') then
+			setTranslation(false, UnitName('target'))
+		else
+			setTranslation(false,nil)
+		end
+	elseif string.lower(str)=='p' or string.lower(str)=='party' then
+		setTranslation(true,nil)
+	end
 
+end
+
+SLASH_treantSpeak1 = '/tree'
+SlashCmdList.treantSpeak = TreantSpeak;
+
+SLASH_language1='/lan'
+SlashCmdList.language=applyLanguage;
+
+SLASH_treantHelp1='/treant'
+SlashCmdList.treantHelp = treeHelp;
+
+SLASH_brokenCommon1='/broken'
+SlashCmdList.brokenCommon = makeBroken;
+
+SLASH_translate1 = '/ts'
+SlashCmdList.translate = translationFun;
+
+
+
+
+
+
+
+
+
+
+-----------------------------------------------------------------
 -- Register the communication prefix
 TreeComm:RegisterComm("treeTalk", function(prefix, message, distribution, sender)
 
@@ -221,21 +329,8 @@ function TreeComm:TreeReceiveMsg(prefix, message, distribution, sender)
 end
 
 
-
-
-function onChatMessage(self, event, message, sender, ...)
-
-
-	local senderName = strsplit("-", sender)
-	local words = nil
-	for str in message:gmatch("%S+") do
-		words = str
-		break
-	end
-	--Check to see who the sender is. 
-	if words=="[Treant]" then
-
-		if senderName ~= UnitName("player") and isEligibleToSpeakOrTranslate() then
+function askForTranslation(senderName,lang)
+		if senderName ~= UnitName("player") and isEligibleToSpeakOrTranslate(lang) then
 
 			TreeComm:TreeSendMsg("WHISPER",senderName, "RQTRANSLATE") 
 			if treantSettings["displayUntranslatedMessages"] then
@@ -248,15 +343,30 @@ function onChatMessage(self, event, message, sender, ...)
 		end
 
 
-		if treeSpeak and treantSettings["displayUntranslatedMessages"] then
+		if isEligibleToSpeakOrTranslate(lang) and treantSettings["displayUntranslatedMessages"] then
 			return false
-		elseif treeSpeak and treantSettings["displayUntranslatedMessages"] == false then
+		elseif isEligibleToSpeakOrTranslate(lang) and treantSettings["displayUntranslatedMessages"] == false then
 			return true
 		else
 			return false
 		end
-	end
+
 end
+
+function onChatMessage(self, event, message, sender, ...)
+	local senderName = strsplit("-", sender)
+	local words = nil
+	for str in message:gmatch("%S+") do
+		words = str
+		break
+	end
+	
+	if contains(languages, string.upper(words:gsub("[%[%]]", ""))) then
+		return askForTranslation(senderName,string.upper(words:gsub("[%[%]]", "")))
+	end
+	
+
+end 
 
 
 
@@ -278,12 +388,21 @@ local originalSendChatMessage = SendChatMessage
 -- Function to replace the player's message
 local function modifiedSendChatMessage(message, chatType, language, channel)
     -- Modify the message here as desired
-	if treeSpeak then
+	
+
+	
+	
+	
+	
+	
+	
+	if currentLanguage~=languages[1] then
 		
-		if not isEligibleToSpeakOrTranslate() then
-			treeSpeak=false
+		if not isEligibleToSpeakOrTranslate(currentLanguage) then
 			isTranslating=false
-			print("You can no longer speak in tree.")
+			print("You can no longer speak that language.")
+			setTranslation(false,nil)
+			currentLanguage=languages[1]
 			originalSendChatMessage(message, chatType, language, channel)
 			return false
 		end
@@ -326,13 +445,6 @@ local function modifiedSendChatMessage(message, chatType, language, channel)
 				str3 = colour.."] "..tempS.."s: "..message
 			end
 			
-			
-
-			
-	
-
-
-
 			lastDecryptedMessage = str1..str2..str3
 			
 			--Only show the translation if the player has that setting enabled
@@ -342,12 +454,12 @@ local function modifiedSendChatMessage(message, chatType, language, channel)
 			
 			newTranslation(lastDecryptedMessage)
 			
-			local newMsg = '[Treant] '..encryptMsg(message)
+			local newMsg = "["..capitalizeFirstLetter(string.lower(currentLanguage)).."] "..encryptMsg(message, currentLanguage)
 			
 			if translateToParty then
-				originalSendChatMessage(message, "PARTY", language, channel)
+				originalSendChatMessage("[Translation-"..capitalizeFirstLetter(string.lower(currentLanguage)).."] "..message, "PARTY", language, channel)
 			elseif fixedTarget ~= nil then
-				originalSendChatMessage(message, "WHISPER", nil, fixedTarget)
+				originalSendChatMessage("[Translation-"..capitalizeFirstLetter(string.lower(currentLanguage)).."] "..message, "WHISPER", nil, fixedTarget)
 			end
 	-- Call the original SendChatMessage function with the modified message
 			originalSendChatMessage(newMsg, chatType, language, channel)
@@ -364,5 +476,5 @@ SendChatMessage = modifiedSendChatMessage
 
 
 -- Additional debugging: Confirm addon is loaded
-print(BLUE.. "Treant Speak is here, ".. UnitName("player"))
+print(BLUE.. "Treant Speak is here, ".. UnitName("player")..". Type /treant help for commands.")
 

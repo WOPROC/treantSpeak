@@ -1,6 +1,6 @@
 -- Function to handle the ADDON_LOADED event
-settingKeys = {"speakLanguageInParty","displayUntranslatedMessages", "displayTranslated"}
-
+settingKeys = {"speakLanguageInParty","displayUntranslatedMessages", "displayTranslated", "showErrorMsgs"}
+languages = {'NONE', 'TREANT', 'FELINE', 'BEAR', 'SNOWMAN','ZOMBIE'}
 
 
 local function OnAddonLoaded(event, addonName, ...)
@@ -11,6 +11,13 @@ local function OnAddonLoaded(event, addonName, ...)
 	end
 end
 
+local defaultValues = 
+{
+	["speakLanguageInParty"] = false,
+	["displayUntranslatedMessages"] = true,
+	["displayTranslated"] = true,
+	["showErrorMsgs"]=true
+}
 
 
 function doStuffWithSavedVariables()
@@ -18,17 +25,20 @@ local data = treantSettings
 
         -- Check if the saved variables exist
         if data then
-			activateCertainButtons()
-
-            -- Access specific data within the saved variables
 			
-        else
+			
+            -- Access specific data within the saved variables
+			for key, value in pairs(defaultValues) do
+				if data[key] == nil then
+					data[key] = value
+				end
+			end
+			
+			activateCertainButtons()
+        
+		else
             print("Saved variables not found.")
-			treantSettings = {
-				["speakLanguageInParty"] = false,
-				["displayUntranslatedMessages"] = true,
-				["displayTranslated"] = true
-			}
+			treantSettings = defaultvalues
         end
 
 end

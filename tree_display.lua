@@ -15,8 +15,8 @@ frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
 
 title = frame:CreateFontString(nil, "OVERLAY")
 title:SetFontObject("GameFontHighlight")
-title:SetPoint("CENTER", frame.TitleBg, "CENTER", 5, 0)
-title:SetText("Treant Speak - Translator")
+title:SetPoint("CENTER", frame.TitleBg, "CENTER", 15, 0)
+title:SetText("Treant Speak+: Translator")
 
 local settingsButton = CreateFrame("Button", "settingsButtonYay", frame, "UIPanelButtonTemplate")
 settingsButton:SetPoint("TOPLEFT")
@@ -56,7 +56,7 @@ settingsTxt:SetPoint("TOP")
 settingsTxt:SetText("Settings")
 
 local helpTxt = settingsContent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-helpTxt:SetPoint("BOTTOM")
+helpTxt:SetPoint("BOTTOM",0,-25)
 helpTxt:SetText("Do /treant help for help!")
 
 
@@ -84,14 +84,50 @@ end
 
 -- Create multiple checkboxes
 local yOffset = 20 -- Initial y offset
-local txtSettings = {"Speak Treant in Party", "Display Untranslated Messages", "Display Translated Messages"}
+local txtSettings = {"Speak Treant in Party", "Display Untranslated Messages", "Display Translated Messages", 'Display Error Messages'}
 
-for i = 1, 3 do
+for i = 1, 4 do
     local checkBox = CreateCheckBox(settingsContent, i, txtSettings[i], yOffset)
     yOffset = yOffset + 30 -- Increase y offset for the next checkbox
     table.insert(checkBoxes, checkBox) -- Add checkbox to the table
 end
 
+--------------
+dropdown = CreateFrame("Frame", "MyAddonDropdown", frame, "UIDropDownMenuTemplate")
+dropdown:SetPoint("BOTTOM", 90, -23)
+UIDropDownMenu_SetWidth(dropdown, 100)
+
+-- Dropdown menu items
+local dropdown_items = {}
+
+local function changeLanguage(language)
+	applyLanguage(language)
+	if currentLanguage == language and language~="NONE" then
+		UIDropDownMenu_SetText(dropdown, capitalizeFirstLetter(string.lower(language)))
+	else
+		UIDropDownMenu_SetText(dropdown, "Pick language")
+	end
+	
+end
+
+for index, value in ipairs(languages) do
+	table.insert(dropdown_items, {text=value, func= function() changeLanguage(value) end })
+end
+-- Dropdown initialization function
+local function InitializeDropdown(self, level)
+    local info = UIDropDownMenu_CreateInfo()
+    for _, item in ipairs(dropdown_items) do
+        info.text = item.text
+        info.func = item.func
+        UIDropDownMenu_AddButton(info, level)
+    end
+end
+
+-- Set the dropdown's initialization function
+UIDropDownMenu_Initialize(dropdown, InitializeDropdown)
+UIDropDownMenu_SetText(dropdown, "Pick language")
+UIDropDownMenu_JustifyText(dropdown, "LEFT")
+-- Function to create and initialize a dropdown box
 
 settingsContent:Hide()
 
@@ -108,14 +144,14 @@ grow:SetSize(25, 25)
 grow:SetText("+")
 
 partyModeb = CreateFrame("Button", "Enlargerner", frame, "UIPanelButtonTemplate")
-partyModeb:SetPoint("BOTTOMLEFT",15, -18)
+partyModeb:SetPoint("BOTTOMLEFT",5, -18)
 partyModeb:SetSize(110, 25)
 partyModeb:SetText("Party Mode: Off")
 
 whisperTargetButton = CreateFrame("Button", "Enlargerner", frame, "UIPanelButtonTemplate")
-whisperTargetButton:SetPoint("BOTTOMLEFT",150, -18)
-whisperTargetButton:SetSize(125, 25)
-whisperTargetButton:SetText("Whisper Translation")
+whisperTargetButton:SetPoint("BOTTOMLEFT",118, -18)
+whisperTargetButton:SetSize(60, 25)
+whisperTargetButton:SetText("Whisper")
 
 
 

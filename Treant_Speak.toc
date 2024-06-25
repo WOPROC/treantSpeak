@@ -1,5 +1,5 @@
 ## Interface: 100207
-## Title: Treant Speak
+## Title: Treant_Speak
 ## Author: FILLUP
 ## Version: 0.0.1
 ## Notes: Speak in the language of the superior race: Treants.
@@ -15,6 +15,6 @@ libs\AceSerializer-3.0\AceSerializer-3.0.xml
 
 
 playerSettings.lua
-tree_display.lua
 translations.lua
+tree_display.lua
 Tree.lua

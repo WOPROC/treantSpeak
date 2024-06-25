@@ -42,9 +42,9 @@ local GRAY = "|cFF808080"
 
 
 ----------------------------
-currentLanguage = languages[1];
+currentLanguage = "NONE"
 
-isBroken = false;
+isBroken = false
 
 local translateToParty=false
 local fixedTarget=nil
@@ -74,7 +74,7 @@ end
 
 
 local function playerHasBuff(buffTable)
-    for i = 1, 40 do
+	for i = 1, 40 do
         local name = UnitBuff("player", i)
         if name and contains(buffTable,name) then
             return true
@@ -86,18 +86,16 @@ end
 
 local function isEligibleToSpeakOrTranslate(lan)
 	lan = string.upper(lan)
-	if lan~='FELINE' and lan~='BEAR' and lan~='TREANT' then
+	
+	if contains(treantSettings['languages'], lan) == false then
+		return false
+	end
+	
+	if languages[lan].buffRequirements == nil then
 		return true
 	end
 	
-	validBuffs = {"Mark of the Wild", "Marca de lo Salvaje"}
-	if lan == languages[2] then
-		table.insert(validBuffs,"Treant Form")	
-	elseif lan== languages[4] then
-		table.insert(validBuffs,"Cat Form")
-	elseif lan==languages[5] then
-		table.insert(validBuffs,"Bear Form")
-	end
+	validBuffs = languages[lan].buffRequirements
 	
 	return playerHasBuff(validBuffs)
 end
@@ -105,7 +103,7 @@ end
 
 function setTranslation(isParty, target)
 
-	if currentLanguage==languages[1] then
+	if currentLanguage=="NONE" then
 		translateToParty=false
 		fixedTarget=nil
 		title:SetText("Treant Speak+: Translator")
@@ -170,16 +168,17 @@ function applyLanguage(str)
 	
 	if str=="" or currentLanguage==string.upper(str) or string.upper(str)=="NONE" then
 		
-		if currentLanguage ~= languages[1] then
+		if currentLanguage ~= languages['NONE'] then
 			print(RED.."You are no longer speaking a language.")
 		end
-		currentLanguage=languages[1]
+		currentLanguage='NONE'
 		setTranslation(false,nil)
 		return
 	end
 	
 	
-	if contains(languages, string.upper(str)) and isEligibleToSpeakOrTranslate(string.upper(str)) then
+	
+	if languages[string.upper(str)] ~= nil and isEligibleToSpeakOrTranslate(string.upper(str)) then
 		brokenNess=''
 		if isBroken then
 			brokenNess="Broken "
@@ -190,8 +189,8 @@ function applyLanguage(str)
 		if not frame:IsVisible() then
 			print(GREEN.."You are now speaking "..brokenNess.. capitalizeFirstLetter(string.lower(str)))
 		end
-	elseif contains(languages, string.upper(str)) then
-		if currentLanguage==languages[1] and treantSettings['showErrorMsgs'] then
+	elseif languages[string.upper(str)] ~= nil then
+		if currentLanguage=='NONE' and treantSettings['showErrorMsgs'] then
 			print(RED.."You cannot speak " .. capitalizeFirstLetter(string.lower(str)) .. "!")
 		else
 			applyLanguage("NONE")
@@ -238,6 +237,7 @@ local function treeHelp(str)
 		print(BLUE.."~> Zombie")
 		print(BLUE.."~> Cat")
 		print(BLUE.."~> Bear")
+		print(BLUE.."~>Snowman")
 	elseif string.lower(str)=="ts" then
 		print(CYAN.."~--TREANT TRANSLATION DESK--~")
 		print(BLUE.."/ts with a target to whisper a translation to the target.")
@@ -264,6 +264,24 @@ local function translationFun(str)
 
 end
 
+
+local function makeLearningFun(str)
+	if string.lower(str)=='tree' then
+		str='TREANT'
+	elseif string.lower(str)=='cat' then
+		str='FELINE'
+	end
+	
+	if contains(treantSettings['languages'], string.upper(str)) then
+		unlearnLanguage(string.upper(str))
+		print(BLUE.."You have unlearned ".. capitalizeFirstLetter(string.lower(str)))
+	else
+		learnNewLanguage(string.upper(str))
+		print(BLUE.."You have learned ".. capitalizeFirstLetter(string.lower(str)))
+	end
+
+end
+
 SLASH_treantSpeak1 = '/tree'
 SlashCmdList.treantSpeak = TreantSpeak;
 
@@ -279,7 +297,9 @@ SlashCmdList.brokenCommon = makeBroken;
 SLASH_translate1 = '/ts'
 SlashCmdList.translate = translationFun;
 
-
+--Idk why but i though tof that one neil degrasse tyson video when i wa smaking this my bad
+SLASH_learnOrUnlearn1 = "/learn"
+SlashCmdList.learnOrUnlearn = makeLearningFun;
 
 
 
@@ -361,7 +381,7 @@ function onChatMessage(self, event, message, sender, ...)
 		break
 	end
 	
-	if contains(languages, string.upper(words:gsub("[%[%]]", ""))) then
+	if languages[string.upper(words:gsub("[%[%]]", ""))] ~= nil then
 		return askForTranslation(senderName,string.upper(words:gsub("[%[%]]", "")))
 	end
 	
@@ -389,20 +409,15 @@ local originalSendChatMessage = SendChatMessage
 local function modifiedSendChatMessage(message, chatType, language, channel)
     -- Modify the message here as desired
 	
-
 	
-	
-	
-	
-	
-	
-	if currentLanguage~=languages[1] then
+	if currentLanguage~="NONE" then
 		
 		if not isEligibleToSpeakOrTranslate(currentLanguage) then
 			isTranslating=false
 			print("You can no longer speak that language.")
+			
+			currentLanguage='NONE'
 			setTranslation(false,nil)
-			currentLanguage=languages[1]
 			originalSendChatMessage(message, chatType, language, channel)
 			return false
 		end
@@ -454,7 +469,12 @@ local function modifiedSendChatMessage(message, chatType, language, channel)
 			
 			newTranslation(lastDecryptedMessage)
 			
-			local newMsg = "["..capitalizeFirstLetter(string.lower(currentLanguage)).."] "..encryptMsg(message, currentLanguage)
+			spokenLanguage = "["..capitalizeFirstLetter(string.lower(currentLanguage)).."] "
+			if(languages[currentLanguage].isRealLanguage == false) then
+				spokenLanguage=""
+			end
+			
+			local newMsg = spokenLanguage..encryptMsg(message)
 			
 			if translateToParty then
 				originalSendChatMessage("[Translation-"..capitalizeFirstLetter(string.lower(currentLanguage)).."] "..message, "PARTY", language, channel)
@@ -473,6 +493,8 @@ local function modifiedSendChatMessage(message, chatType, language, channel)
 end
 
 SendChatMessage = modifiedSendChatMessage
+
+
 
 
 -- Additional debugging: Confirm addon is loaded

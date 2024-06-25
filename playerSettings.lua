@@ -1,6 +1,8 @@
 -- Function to handle the ADDON_LOADED event
 settingKeys = {"speakLanguageInParty","displayUntranslatedMessages", "displayTranslated", "showErrorMsgs"}
-languages = {'NONE', 'TREANT', 'FELINE', 'BEAR', 'SNOWMAN','ZOMBIE'}
+
+
+
 
 
 local function OnAddonLoaded(event, addonName, ...)
@@ -8,6 +10,13 @@ local function OnAddonLoaded(event, addonName, ...)
 	local str=...
 	if str =="Treant_Speak" then
 		doStuffWithSavedVariables()
+		
+		
+		for key, value in pairs(treantSettings["languages"]) do
+			table.insert(dropdown_items, {text=value, func= function() changeLanguage(value) end })
+		end
+		
+		
 	end
 end
 
@@ -16,7 +25,8 @@ local defaultValues =
 	["speakLanguageInParty"] = false,
 	["displayUntranslatedMessages"] = true,
 	["displayTranslated"] = true,
-	["showErrorMsgs"]=true
+	["showErrorMsgs"]=true,
+	['languages']={"NONE", "TREANT", "FELINE", 'BEAR'}
 }
 
 
@@ -26,7 +36,7 @@ local data = treantSettings
         -- Check if the saved variables exist
         if data then
 			
-			
+
             -- Access specific data within the saved variables
 			for key, value in pairs(defaultValues) do
 				if data[key] == nil then
@@ -47,3 +57,5 @@ end
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
 frame:SetScript("OnEvent", OnAddonLoaded)
+
+

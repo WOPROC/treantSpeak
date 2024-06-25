@@ -14,7 +14,8 @@ libs\AceSerializer-3.0\AceSerializer-3.0.xml
 libs\LibStud.lua
 
 playerSettings.lua
-tree_display.lua
 translations.lua
+tree_display.lua
 Tree.lua
+
 

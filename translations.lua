@@ -131,6 +131,7 @@ local translationTables = {
 ['SNOWMAN']=snowmanTranslations
 }
 
+
 local function capitalizeRandomly(char)
     local rand = math.random(4) -- Generate random number: 1, 2, 3, or 4
     if rand == 1 then
@@ -151,11 +152,11 @@ local function breakWord(word)
 end
 
 
-function encryptLetters(word, tTable)
+function encryptLetters(word)
 	if isBroken then
 		word=breakWord(word)
 	end
-	for _, pair in ipairs(tTable) do
+	for _, pair in ipairs(languages[currentLanguage].translationTable) do
 		if not isBroken or (isBroken and string.lower(pair[1]) == pair[1]) then 
 			word=word:gsub(pair[1],pair[2])
 		end
@@ -165,8 +166,9 @@ function encryptLetters(word, tTable)
     return word
 end
 
-function encryptWords(msg, tTable)
+function encryptWords(msg)
 	local words = {}
+
 
 	-- Using string.gmatch to iterate over words separated by spaces
 	for word in msg:gmatch("[%w]+") do
@@ -175,11 +177,11 @@ function encryptWords(msg, tTable)
 
 	local translatedWords={}
 	for i, word in ipairs(words) do
-		translation = tTable[math.random(#tTable)]
+		translation = languages[currentLanguage].translationTable[math.random(#languages[currentLanguage].translationTable)]
 		table.insert(translatedWords, translation)
 	end	
 	
-	finalC=str:sub(#str, #str)
+	finalC=msg:sub(#msg, #msg)
 	lastCharacter=""
 	if finalC=="?" or finalC=="!" or finalC=="." then
 		lastCharacter=finalC
@@ -190,15 +192,83 @@ function encryptWords(msg, tTable)
 end
 
 
-function encryptMsg(message, language)
-	str = message
-	if contains(byLetter,language) then
-		return encryptLetters(str,translationTables[language])
-	else
-		return encryptWords(message,translationTables[language])
-	end
-	return str
+function encryptMsg(message)
+	trans=languages[currentLanguage].translationFunction
+	return trans(message)
+end
 
+
+
+
+languages = {
+["NONE"] = {
+	buffRequirements = nil, 
+	isRealLanguage=false, 
+	translationFunction = nil, 
+	translationTable=nil
+	},
+['TREANT'] = {
+	buffRequirements = {"Mark of the Wild", "Treant Form", "Marca de lo Salvaje"}, 
+	isRealLanguage=true, 
+	translationFunction=encryptLetters, 
+	translationTable=englishToTreant},
+['FELINE'] = {
+	buffRequirements = {"Mark of the Wild", "Cat Form", "Marca de lo Salvaje"}, 
+	isRealLanguage=true, 
+	translationFunction=encryptWords, 
+	translationTable=felineTranslations},
+['BEAR'] = {
+	buffRequirements = {"Mark of the Wild", "Bear Form", "Marca de lo Salvaje"}, 
+	isRealLanguage=true, 
+	translationFunction=encryptWords, 
+	translationTable=bearTranslations},
+['SNOWMAN'] = {
+	buffRequirements = nil, 
+	isRealLanguage=true, 
+	translationFunction=encryptWords, 
+	translationTable=snowmanTranslations},
+['ZOMBIE'] = {
+	buffRequirements = nil, 
+	isRealLanguage=true, 
+	translationFunction=encryptWords, 
+	translationTable=zombieTranslations}
+}
+
+
+
+
+
+
+function learnNewLanguage(languageTolearn)
+
+	--Insert a new language into 
+	if(languages[languageTolearn]) then
+		table.insert(treantSettings["languages"], languageTolearn)
+	end
+	
+	--Update our dropdown box
+	table.insert(dropdown_items, {text=languageTolearn, func= function() changeLanguage(languageTolearn) end })
+
+end
+
+function unlearnLanguage(languageToUnlearn)
+	for i,v in ipairs(treantSettings['languages']) do
+		if treantSettings['languages'][i] == languageToUnlearn then
+			table.remove(treantSettings['languages'], i)
+		end
+	end
+	
+	for i, val in ipairs(dropdown_items) do
+		if val.text == languageToUnlearn then
+			table.remove(dropdown_items, i)
+		end
+	end
+
+end
+
+--Adding languages not supported in the ORIGINAL addon. This MUST be called on initilization of separate addon.
+function addNewLanguage(lang, langInfo)
+	languages[lang] = langInfo
 end
 
 

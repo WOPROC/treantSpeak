@@ -45,19 +45,22 @@ end
 ------------------------
 --	  Setttings	      --
 ------------------------
+local settingsScroller = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
+settingsScroller:SetPoint("TOPLEFT", 10, -30)
+settingsScroller:SetPoint("BOTTOMRIGHT", -30, 10)
 
+-- Create a content frame for the scroll frame
+local settingsContent = CreateFrame("Frame", nil, settingsScroller)
+settingsContent:SetSize(270, 600) -- Ensure the content frame is larger than the scroll frame's viewable area
 
-local settingsContent = CreateFrame("Frame", "TreeTranslatorSettingsContent", frame)
-settingsContent:SetPoint("TOPLEFT", 10, -35)
-settingsContent:SetPoint("BOTTOMRIGHT", -10, 35)
+-- Set the scroll child of the scroll frame to the content frame
+settingsScroller:SetScrollChild(settingsContent)
 
+-- Create and position the "Settings" text
 local settingsTxt = settingsContent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-settingsTxt:SetPoint("TOP")
+settingsTxt:SetPoint("TOP", 0, -10) -- Slight adjustment to be visible
 settingsTxt:SetText("Settings")
 
-local helpTxt = settingsContent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-helpTxt:SetPoint("BOTTOM",0,-25)
-helpTxt:SetText("Do /treant help for help!")
 
 
 local function CreateCheckBox(parent, name, text, yOffset)
@@ -92,15 +95,20 @@ for i = 1, 4 do
     table.insert(checkBoxes, checkBox) -- Add checkbox to the table
 end
 
+
+
+
+--------------
+---Creating Dropdown Menu to select language
 --------------
 dropdown = CreateFrame("Frame", "MyAddonDropdown", frame, "UIDropDownMenuTemplate")
 dropdown:SetPoint("BOTTOM", 90, -23)
 UIDropDownMenu_SetWidth(dropdown, 100)
 
 -- Dropdown menu items
-local dropdown_items = {}
+dropdown_items = {}
 
-local function changeLanguage(language)
+function changeLanguage(language)
 	applyLanguage(language)
 	if currentLanguage == language and language~="NONE" then
 		UIDropDownMenu_SetText(dropdown, capitalizeFirstLetter(string.lower(language)))
@@ -110,9 +118,11 @@ local function changeLanguage(language)
 	
 end
 
-for index, value in ipairs(languages) do
-	table.insert(dropdown_items, {text=value, func= function() changeLanguage(value) end })
-end
+
+
+
+
+
 -- Dropdown initialization function
 local function InitializeDropdown(self, level)
     local info = UIDropDownMenu_CreateInfo()
@@ -129,7 +139,84 @@ UIDropDownMenu_SetText(dropdown, "Pick language")
 UIDropDownMenu_JustifyText(dropdown, "LEFT")
 -- Function to create and initialize a dropdown box
 
-settingsContent:Hide()
+settingsScroller:Hide()
+
+
+-----~ Creating Language Learning Section -------~
+
+yOffset=-yOffset
+
+--~ Settings: Learn new language ~--
+--We will list every single language available, along with the ability to learn/unlearn them.
+--To do this, it will be a simple text field with a button. 
+local languageLearningSectionText = settingsContent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+languageLearningSectionText:SetPoint("TOP", 0, yOffset)
+languageLearningSectionText:SetText("Add or Remove Languages")
+yOffset=yOffset-30
+
+
+function createNewLanguage(languageToAdd)
+	local txt = settingsContent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	txt:SetPoint("TOPLEFT",15,yOffset)
+	txt:SetText(languageToAdd)
+	
+	
+	
+	local learnLanguage = CreateFrame("Button", "Enlargerner", settingsContent, "UIPanelButtonTemplate")
+	learnLanguage:SetPoint("TOP", 50, yOffset+5)
+	learnLanguage:SetSize(150, 25)
+	
+	if contains(treantSettings['languages'], languageToAdd) then
+		learnLanguage:SetText("Unlearn Language")
+	else
+		learnLanguage:SetText("Learn Language")
+	end
+	
+	
+	learnLanguage:SetScript("OnClick", function(self)
+        -- Do something when checkbox value changes
+        if contains(treantSettings['languages'], languageToAdd) then
+			unlearnLanguage(languageToAdd)
+			self:SetText("Learn Language")
+		else
+			learnNewLanguage(languageToAdd)
+			self:SetText("Unlearn Language")
+		end
+		
+		--big sadge that we dont have switch statements in lua bruh this smells
+    end)
+	
+	yOffset=yOffset-30
+	
+end
+
+function addListOfLangs()
+		for keys, vals in pairs(languages) do
+			if keys~="NONE" then
+				createNewLanguage(keys)
+			end
+		end
+end
+
+
+
+
+local function OnAddonLoaded(event, addonName, ...)
+    -- Check if the loaded addon is your addon
+	local str=...
+	if str =="Treant_Speak" then
+		--Give it a 1 second buffer to add any other misc. languages not included in the addon
+		C_Timer.After(1,addListOfLangs)
+		C_Timer.After(1, function()local maxScroll = scrollFrame:GetVerticalScrollRange() scrollFrame:SetVerticalScroll(maxScroll) end)
+		--Also, fix the scroll-bar not always being at the bottom (just waiting 1 second after initilization)
+		
+		
+		
+	end
+end
+
+
+
 
 ----- Finished with Settings -------------------------------------
 ------------------------------------------------------------------
@@ -254,13 +341,14 @@ end
 
 ----~
 local function showSettings(self)
+	
 	if scrollFrame:IsShown() then
 		scrollFrame:Hide()
-		settingsContent:Show()
+		settingsScroller:Show()
 		settingsButton:SetText("Chat Box")
 	else
 		scrollFrame:Show()
-		settingsContent:Hide()
+		settingsScroller:Hide()
 		settingsButton:SetText("Settings")
 	end
 end
@@ -333,4 +421,13 @@ shrink:SetScript("OnClick",shrinkFrame)
 
 
 
------~
+
+
+
+
+
+local onLoad = CreateFrame("Frame")
+onLoad:RegisterEvent("ADDON_LOADED")
+onLoad:SetScript("OnEvent", OnAddonLoaded)
+
+

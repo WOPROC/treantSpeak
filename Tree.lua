@@ -219,18 +219,82 @@ local function toggleBrokenFunc()
 	setTranslation(partyMode, characterToTranslateTo)
 end
 
+local function helpFunc(str)
+	if(string.len(str) == 0) then
+		treantBoxToggle()
+	else
+		if(string.lower(str) == "help") then
+			print(BLUE.."TREANT HELP DESK")
+			print("Type /lan to see list of current languages.")
+			print("Type /treant to turn translation box on.")
+			print("Type /learn to learn a language.")
+			print("Type /forget to unlearn a language.")
+		end
+	end
+end
+
+local function doLanguage(str)
+	if(string.len(str) == 0) then
+		print(BLUE.."Available languages...")
+		langs = ""
+		
+		for k,v in pairs(languages) do
+			
+			if(k ~= "NONE") then
+				langs = langs .. " " .. k
+			end
+		end
+		
+		print(langs)
+	else
+		applyLanguage(str)
+	end
+end
+
+local function learnLanguage(str)
+
+	properStr = string.upper(str)
+	if(properStr == "TREE") then
+		properStr = "TREANT"
+	elseif(properStr == "CAT") then
+		properStr = "FELINE"
+	end
+
+	learnNewLanguage(properStr)
+
+end
+
+local function forgetLanguageCmd(str)
+	properStr = string.upper(str)
+	if(properStr == "TREE") then
+		properStr = "TREANT"
+	elseif(properStr == "CAT") then
+		properStr = "FELINE"
+	end
+
+	forgetLanguage(properStr)
+
+end
+
 --Slash commands definitions
 SLASH_TreantSpeak1 = '/tree'
 SlashCmdList.TreantSpeak = TreantSpeak;
 
 SLASH_language1='/lan'
-SlashCmdList.language=applyLanguage;
+SlashCmdList.language=doLanguage;
+
+SLASH_learnLan1 = "/learn"
+SlashCmdList.learnLan = learnLanguage;
+
+SLASH_forgetLan1 = "/forget"
+SlashCmdList.forgetLan = forgetLanguageCmd;
 
 SLASH_treantBox1 = "/treant"
-SlashCmdList.treantBox = treantBoxToggle;
+SlashCmdList.treantBox = helpFunc;
 
 SLASH_toggleBroken1 = "/broken"
 SlashCmdList.toggleBroken = toggleBrokenFunc;
+
 
 
 

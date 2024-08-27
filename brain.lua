@@ -112,14 +112,21 @@ local zombieTranslations = {
 'ughhh', 'brainss', 'brainzz', 'brainz', 'brains', 'brainnssss', 'ughhh,', 'erghh', 'brains?', 'gah'
 }
 
-local snowmanTranslations = 
-{
+local snowmanTranslations = {
 "snow", "Snow", "snow!", "Snow, snow. Snow!"
+}
+
+local duckTranslations = {
+"Quack", "Quackity quack", "Quack quack?", "Quack!", "...", "Quack!!", "quack quack quack"
+}
+
+local canineTranslations = {
+"Woof", "WOOF", "Woof woof woof", "Bark bark", "bark", "BARK...? Woof woof!", "woof, woof woof... woof!", "woof woof", "woof"
 }
 
 
 --~ Local ~--
-local defaultSaved = {
+local defaultValues = {
 	["speakLanguageInParty"] = false,
 	["displayUntranslatedMessages"] = true,
 	["displayTranslated"] = true,
@@ -127,6 +134,7 @@ local defaultSaved = {
 	--Known languages
 	['languages']={"NONE", "TREANT", "FELINE", 'BEAR'}
 }
+
 
 
 
@@ -175,7 +183,7 @@ local defaultSaved = {
 		end
 	
 		if str=="" or currentLanguage==string.upper(str) or string.upper(str)=="NONE" then
-		
+			
 			if currentLanguage ~= languages['NONE'] then
 				print(RED.."You are no longer speaking a language.")
 			end
@@ -476,5 +484,19 @@ languages = {
 		isRealLanguage=true, 
 		translationFunction=encryptWords, 
 		translationTable=zombieTranslations
+	},
+	['DUCK'] = 
+	{
+		buffRequirements=nil,
+		isRealLanguage=true,
+		translationFunction=encryptWords,
+		translationTable=duckTranslations
+	},
+	['CANINE'] = 
+	{
+		buffRequirements=nil,
+		isRealLanguage=true,
+		translationFunction=encryptWords,
+		translationTable=canineTranslations
 	}
 }

@@ -13,9 +13,9 @@ libs\LibStud\LibStub.lua
 libs\AceComm-3.0\AceComm-3.0.lua
 libs\AceSerializer-3.0\AceSerializer-3.0.lua
 
-display.lua
 brain.lua
 Tree.lua
+display.lua
 
 
 

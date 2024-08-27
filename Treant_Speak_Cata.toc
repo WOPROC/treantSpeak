@@ -13,9 +13,7 @@ libs\AceComm-3.0\AceComm-3.0.xml
 libs\AceSerializer-3.0\AceSerializer-3.0.xml
 libs\LibStud.lua
 
-playerSettings.lua
-translations.lua
-tree_display.lua
+brain.lua
 Tree.lua
-
+display.lua
 

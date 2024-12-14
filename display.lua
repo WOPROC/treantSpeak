@@ -4,27 +4,27 @@ checkBoxes = {}
 
 
 ---------------------------- CREATING UI -----------------------------------------------------
-frame = CreateFrame("Frame", "Tree Translator", UIParent, "BasicFrameTemplateWithInset")
-frame:SetSize(300, 200)
-frame:SetPoint("CENTER")
-frame:SetMovable(true)
-frame:EnableMouse(true)
-frame:RegisterForDrag("LeftButton")
-frame:SetScript("OnDragStart", frame.StartMoving)
-frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
+treeFrame = CreateFrame("Frame", "Tree Translator", UIParent, "BasicFrameTemplateWithInset")
+treeFrame:SetSize(300, 200)
+treeFrame:SetPoint("CENTER")
+treeFrame:SetMovable(true)
+treeFrame:EnableMouse(true)
+treeFrame:RegisterForDrag("LeftButton")
+treeFrame:SetScript("OnDragStart", treeFrame.StartMoving)
+treeFrame:SetScript("OnDragStop", treeFrame.StopMovingOrSizing)
 
-title = frame:CreateFontString(nil, "OVERLAY")
+title = treeFrame:CreateFontString(nil, "OVERLAY")
 title:SetFontObject("GameFontHighlight")
-title:SetPoint("CENTER", frame.TitleBg, "CENTER", 15, 0)
+title:SetPoint("CENTER", treeFrame.TitleBg, "CENTER", 15, 0)
 title:SetText("Treant Speak+: Translator")
 
-local settingsButton = CreateFrame("Button", "settingsButtonYay", frame, "UIPanelButtonTemplate")
+local settingsButton = CreateFrame("Button", "settingsButtonYay", treeFrame, "UIPanelButtonTemplate")
 settingsButton:SetPoint("TOPLEFT")
 settingsButton:SetSize(60, 25)
 settingsButton:SetText("Settings")
 
 ---Treant Chat Box---
-local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
+local scrollFrame = CreateFrame("ScrollFrame", nil, treeFrame, "UIPanelScrollFrameTemplate")
 scrollFrame:SetPoint("TOPLEFT", 10, -30)
 scrollFrame:SetPoint("BOTTOMRIGHT", -30, 10)
 
@@ -45,7 +45,7 @@ end
 ------------------------
 --	  Setttings	      --
 ------------------------
-local settingsScroller = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
+local settingsScroller = CreateFrame("ScrollFrame", nil, treeFrame, "UIPanelScrollFrameTemplate")
 settingsScroller:SetPoint("TOPLEFT", 10, -30)
 settingsScroller:SetPoint("BOTTOMRIGHT", -30, 10)
 
@@ -58,7 +58,7 @@ settingsScroller:SetScrollChild(settingsContent)
 
 -- Create and position the "Settings" text
 local settingsTxt = settingsContent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-settingsTxt:SetPoint("TOP", 0, -10) -- Slight adjustment to be visible
+settingsTxt:SetPoint("TOP", 0, -30) -- Slight adjustment to be visible
 settingsTxt:SetText("Settings")
 
 
@@ -77,7 +77,10 @@ local function CreateCheckBox(parent, name, text, yOffset)
         local isChecked = self:GetChecked()
         -- Do something when checkbox value changes
         local number=tonumber(name)
-		treantSettings[settingKeys[number]] = isChecked
+		local keyToChange = savedKeys[number]
+		treantSettings[keyToChange] = isChecked
+		print(treantSettings["displayUntranslatedMessages"])
+		print(treantSettings["displayTranslated"])
 		
 		--big sadge that we dont have switch statements in lua bruh this smells
     end)
@@ -85,8 +88,13 @@ local function CreateCheckBox(parent, name, text, yOffset)
     return checkBox
 end
 
+
+local helpTxt = settingsContent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+helpTxt:SetPoint("TOP", 0, -10)
+helpTxt:SetText(BLUE.."TYPE /treant help FOR HELP")
+
 -- Create multiple checkboxes
-local yOffset = 20 -- Initial y offset
+local yOffset = 50 -- Initial y offset
 local txtSettings = {"Speak Treant in Party", "Display Untranslated Messages", "Display Translated Messages", 'Display Error Messages'}
 
 for i = 1, 4 do
@@ -101,7 +109,7 @@ end
 --------------
 ---Creating Dropdown Menu to select language
 --------------
-dropdown = CreateFrame("Frame", "MyAddonDropdown", frame, "UIDropDownMenuTemplate")
+dropdown = CreateFrame("Frame", "MyAddonDropdown", treeFrame, "UIDropDownMenuTemplate")
 dropdown:SetPoint("BOTTOM", 90, -23)
 UIDropDownMenu_SetWidth(dropdown, 100)
 
@@ -146,9 +154,12 @@ settingsScroller:Hide()
 
 yOffset=-yOffset
 
+
 --~ Settings: Learn new language ~--
 --We will list every single language available, along with the ability to learn/unlearn them.
 --To do this, it will be a simple text field with a button. 
+
+
 local languageLearningSectionText = settingsContent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 languageLearningSectionText:SetPoint("TOP", 0, yOffset)
 languageLearningSectionText:SetText("Add or Remove Languages")
@@ -176,7 +187,7 @@ function createNewLanguage(languageToAdd)
 	learnLanguage:SetScript("OnClick", function(self)
         -- Do something when checkbox value changes
         if contains(treantSettings['languages'], languageToAdd) then
-			unlearnLanguage(languageToAdd)
+			forgetLanguage(languageToAdd)
 			self:SetText("Learn Language")
 		else
 			learnNewLanguage(languageToAdd)
@@ -220,22 +231,22 @@ end
 
 ----- Finished with Settings -------------------------------------
 ------------------------------------------------------------------
-local shrink = CreateFrame("Button", "Squish", frame, "UIPanelButtonTemplate")
+local shrink = CreateFrame("Button", "Squish", treeFrame, "UIPanelButtonTemplate")
 shrink:SetPoint("BOTTOMLEFT", -8, 0)
 shrink:SetSize(25, 25)
 shrink:SetText("-")
 
-local grow = CreateFrame("Button", "Enlargerner", frame, "UIPanelButtonTemplate")
+local grow = CreateFrame("Button", "Enlargerner", treeFrame, "UIPanelButtonTemplate")
 grow:SetPoint("BOTTOMLEFT", -8, 30)
 grow:SetSize(25, 25)
 grow:SetText("+")
 
-partyModeb = CreateFrame("Button", "Enlargerner", frame, "UIPanelButtonTemplate")
+partyModeb = CreateFrame("Button", "Enlargerner", treeFrame, "UIPanelButtonTemplate")
 partyModeb:SetPoint("BOTTOMLEFT",5, -18)
 partyModeb:SetSize(110, 25)
 partyModeb:SetText("Party Mode: Off")
 
-whisperTargetButton = CreateFrame("Button", "Enlargerner", frame, "UIPanelButtonTemplate")
+whisperTargetButton = CreateFrame("Button", "Enlargerner", treeFrame, "UIPanelButtonTemplate")
 whisperTargetButton:SetPoint("BOTTOMLEFT",118, -18)
 whisperTargetButton:SetSize(60, 25)
 whisperTargetButton:SetText("Whisper")
@@ -254,7 +265,7 @@ local function calculateMaxCharactersPerLine()
 	local maxValue = 1
 	for i=1,300 do
 		textBoxes[1]:SetText(theString)
-		if textBoxes[1]:GetWidth() > frame:GetWidth() then
+		if textBoxes[1]:GetWidth() > treeFrame:GetWidth() then
 			break
 		end
 		
@@ -389,10 +400,10 @@ whisperTargetButton:SetScript("OnClick", setFixedTarget)
 ----~
 
 local function growFrame(self)
-	local frameWidth = frame:GetWidth()
-	local frameHeight = frame:GetHeight()
+	local frameWidth = treeFrame:GetWidth()
+	local frameHeight = treeFrame:GetHeight()
 	if frameHeight < 600 and frameWidth < 600 then
-		frame:SetSize(frameWidth + 10, frameHeight+10)
+		treeFrame:SetSize(frameWidth + 10, frameHeight+10)
 	end
 	rebuildChatHistory()
 end
@@ -406,11 +417,11 @@ grow:SetScript("OnClick", growFrame)
 ----~
 
 local function shrinkFrame(self)
-	local frameWidth = frame:GetWidth()
-	local frameHeight = frame:GetHeight()
+	local frameWidth = treeFrame:GetWidth()
+	local frameHeight = treeFrame:GetHeight()
 	
 	if frameHeight > 200 and frameWidth > 300 then
-		frame:SetSize(frameWidth - 10, frameHeight-10)
+		treeFrame:SetSize(frameWidth - 10, frameHeight-10)
 	end
 	
 	rebuildChatHistory()

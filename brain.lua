@@ -124,6 +124,159 @@ local canineTranslations = {
 "Woof", "WOOF", "Woof woof woof", "Bark bark", "bark", "BARK...? Woof woof!", "woof, woof woof... woof!", "woof woof", "woof"
 }
 
+local demonicTranslations = {
+    ["A"] = "",
+	["E"] = "",
+	["I"] = "",
+	["O"] = "",
+	["U"] = "",
+	["X"] = "",
+	["Y"] = "",
+	["Az"] = "",
+	["Il"] = "",
+	["Me"] = "",
+	["Re"] = "",
+	["Te"] = "",
+	["Ul"] = "",
+	["Ur"] = "",
+	["Xi"] = "",
+	["Za"] = "",
+	["Ze"] = "",
+	["Asj"] ="", 
+	["Daz"] = "",
+	["Gul"]="",
+	["Kar"] = "",
+	["Laz"] = "",
+	["Lek"] = "",
+	["Lok"] = "",
+	["Maz"] = "",
+	["Ril"] = "",
+	["Ruk"] = "",
+	["Shi"] = "",
+	["Tor"] = "",
+	["Zar"] = "",
+	["Alar"] = "",
+	["Aman"] = "",
+	["Amir"] = "",
+	["Ante"] = "", 
+	["Ashj"] = "",
+	["Kiel"] = "", 
+	["Maev"] = "", 
+	["Maez"] = "", 
+	["Orah"] = "", 
+	["Parn"] = "", 
+	["Raka"] = "", 
+	["Rikk"] = "", 
+	["Veni"] = "", 
+	["Zenn"] = "", 
+	["Zila"] = "",
+	["Adare"] = "", 
+	["Belan"] = "", 
+	["Buras"] = "", 
+	["Enkil"] = "", 
+	["Golad"] = "", 
+	["Gular"]="",
+	["Kamil"] = "", 
+	["Melar"] = "", 
+	["Modas"] = "",
+	["Nagas"] = "", 
+	["Rakir"] = "", 
+	["Refir"] = "", 
+	["Revos"] = "", 
+	["Soran"] = "", 
+	["Tiros"] = "", 
+	["Zekul"] = "",
+   ["Arakal"] = "",
+    ["Archim"] = "",
+    ["Azgala"] = "",
+    ["Karkun"] = "",
+    ["Kazile"] = "",
+    ["Mannor"] = "",
+    ["Mishun"] = "",
+    ["Rakkan"] = "",
+    ["Rakkas"] = "",
+    ["Rethul"] = "",
+    ["Revola"] = "",
+    ["Thorje"] = "",
+    ["Tichar"] = "",
+    ["Amanare"] = "",
+    ["Belaros"] = "",
+    ["Danashj"] = "",
+    ["Faramos"] = "",
+    ["Gulamir"] = "",
+    ["Karaman"] = "",
+    ["Kieldaz"] = "",
+    ["Rethule"] = "",
+    ["Tiriosh"] = "",
+    ["Toralar"] = "",
+    ["Zennshi"] = "",
+    ["Amanalar"] = "",
+    ["Ashjraka"] = "",
+    ["Azgalada"] = "",
+    ["Azrathud"] = "",
+    ["Belankar"] = "",
+    ["Enkilzar"] = "",
+    ["Kirasath"] = "",
+    ["Maladath"] = "",
+    ["Mordanas"] = "",
+    ["Romathis"] = "",
+    ["Rukadare"] = "",
+    ["Sorankar"] = "",
+    ["Theramas"] = "",
+    ["Arakalada"] = "",
+    ["Kanrethad"] = "",
+    ["Melarorah"] = "",
+    ["Nagasraka"] = "",
+    ["Naztheros"] = "",
+    ["Soranaman"] = "",
+    ["Teamanare"] = "",
+    ["Zilthuras"] = "",
+    ["Amanemodas"] = "",
+    ["Ashjrethul"] = "",
+    ["Benthadoom"] = "",
+    ["Burasadare"] = "",
+    ["Enkilgular"] = "",
+    ["Kamilgolad"] = "",
+    ["Matheredor"] = "",
+    ["Melarnagas"] = "",
+    ["Pathrebosh"] = "",
+    ["Ticharamir"] = "",
+    ["Zennrakkan"] = "",
+    ["Archimtiros"] = "",
+    ["Ashjrakamas"] = "",
+    ["Kamilgolad"] = "",
+    ["Mannorgulan"] = "",
+    ["Mishunadare"] = "",
+    ["Zekulrakkas"] = "",
+    ["Zennshinaga"] = "",	
+	['Archimonde'] = 'archimonde',
+	["Kil"] = "kil",
+	["jaeden"] = 'jaeden',
+	['Sargeras'] = 'sargeras',
+	['Draenei'] = 'draenei',
+	['Ei'] = 'one',
+	['Eis'] = 'ones',
+	['Or'] = 'refuge',
+	['Draenor'] = 'draenor',
+	['Anach kyree'] = 'insect',
+	['A-rul shach kigon'] = 'i will eat your heart',
+	["Man'ari"] = 'unnatural',
+	['Krosnis'] = 'furnace',
+	['Katra'] = 'suffer',
+	['zil'] = 'and',
+	['Shukil'] = 'perish',
+	['Rakeesh'] = 'butcher',
+	["Shaza-kiel!"] = 'surrender',
+	['Shat'] = 'light',
+	['Shattrath'] = 'dwelling of light',
+	['Ruin'] = 'guard',
+	["Ered'ruin"] = 'doomguard'
+}
+
+local horseTranslations = {
+	"Neigh", "Neigh~!", "Neigh", "Neigh neigh", "Neigh!", "Neigh...", "neigh", "neigh", "neigh", "Neigh neigh neigh", "neigh", "neigh"
+}
+
 
 --~ Local ~--
 local defaultValues = {
@@ -132,7 +285,9 @@ local defaultValues = {
 	["displayTranslated"] = true,
 	["showErrorMsgs"]=true,
 	--Known languages
-	['languages']={"NONE", "TREANT", "FELINE", 'BEAR'}
+	['languages']={"NONE", "TREANT", "FELINE", 'BEAR'},
+	--Custom languages
+	['customLanguages'] = {}
 }
 
 
@@ -203,7 +358,7 @@ local defaultValues = {
 			currentLanguage=string.upper(str)
 			title:SetText(GREEN.."Speaking: "..brokenNess..currentLanguage)
 			UIDropDownMenu_SetText(dropdown, capitalizeFirstLetter(string.lower(str)))
-			if not frame:IsVisible() then
+			if not treeFrame:IsVisible() then
 				print(GREEN.."You are now speaking "..brokenNess.. capitalizeFirstLetter(string.lower(str)))
 			end
 		elseif languages[string.upper(str)] ~= nil then
@@ -220,7 +375,7 @@ local defaultValues = {
 	
 	end
 
---> Encryption Methods
+--> Translator Methods
 
 	--These first few functions are meant to only be called from the global functions.
 	local function capitalizeRandomly(char,proficiency)
@@ -270,6 +425,7 @@ local defaultValues = {
 		return word
 	end
 
+	--Given a word, encrypt it to a new word.
 	function encryptWords(msg)
 		local words = {}
 
@@ -295,7 +451,90 @@ local defaultValues = {
 		return table.concat(translatedWords, " ")..finalC
 	
 	end
+	
+	
+	
+	--If an english word appears in the table, translate it to the corresponding translation.
+	--If not, randomly select a word with no english equivalent, with a higher probability if the word
+	--is close in length
+	--ex: A 4 letter word with no translation would have the highest probabilty to be translated to a 3,4, or 5 letter word.
+	function complexEncryptWords(msg)
+		t_translationTable = languages[currentLanguage].translationTable
+		--STEP 1: Translate words & phrases that have meaning
+		t_phraseList= {}
+		t_ignore = {}
+		t_masterTranslatorTable = { {}, {}, {}, {}, {}, {}, {} }
+		for translatedWord, englishWord in pairs(t_translationTable) do
+			if englishWord ~= "" then
+				t_phraseList[englishWord] = translatedWord
+				appendPhraseToTable(t_ignore, translatedWord)
+				appendPhraseToTable(t_ignore, string.upper(translatedWord))
+			else
+				local count = #translatedWord
+				--If our word is longer than 7 characters, we instead just say its 7 characters.
+				--This is because creating more lists for words greater than 7 characters is purely
+				--wasteful, and adds more variety to potential translations (instead of restricting them
+				--to obscenely long messages)
+				if count > 7 then
+					count=7
+				end
+				
+				table.insert(t_masterTranslatorTable[count], translatedWord)
+			end
+		end
+		
+		local newMsgA= swapKeysToValues(t_phraseList, msg)
+		local newSentence = {}
+		
+		for word, punctuation in newMsgA:gmatch("(%w+)(%p*)") do
+			if not contains(t_ignore, word) then
+				local chances = {1,2,3,4,5,6,7}
+				local chance1 = #word - 1
+				local chance2 = #word
+				local chance3 = #word+1
+						
+				if chance1 == 0 then
+					chance1 = #word
+				elseif chance3 == 8 then
+					chance3 = #word
+				end
+						
+				for i=1,7 do
+							if i<2 then
+								table.insert(chances,chance1)
+							elseif i<5 then
+								table.insert(chances, chance2)
+							else
+								table.insert(chances,chance3)
+							end
+						end
+				
+				local desiredIndex = math.random(#chances)
+				local desiredTable = t_masterTranslatorTable[chances[desiredIndex]]
 
+				
+				if desiredTable and #desiredTable > 0 then
+					local desiredTranslationIndex = math.random(#desiredTable)
+					local fVal = desiredTable[desiredTranslationIndex]
+					if(string.upper(word) == word) then
+						temp = string.upper(fVal)
+						fVal = temp
+					end
+					table.insert(newSentence, fVal..punctuation)
+				end
+
+						
+			
+			else
+				table.insert(newSentence, word)
+			end
+		end
+
+	
+		local finalSentence = table.concat(newSentence, " ")
+		return capitalizeFirstLetter(finalSentence) 
+	end
+	
 	
 	--Actual function called to encrypt messages
 	function encryptMsg(msg)
@@ -351,7 +590,56 @@ local defaultValues = {
 		end
 		return false
 	end
+	
+	function contains_lookAtValue(inTable, value)
+		for key, val in pairs(inTable) do
+			if val==value then
+				return true
+			end
+		end
+		return false
+	end
 
+    function replaceValueWithKey(t_table, s_value)
+		-- Look up the value in our translation table and return the corresponding key
+		for key, val in pairs(t_table) do
+			if val == s_value then
+				return key  -- Return the key if the value matches
+			end
+		end
+		return s_value  -- Return the original value if no match is found
+	end
+	
+function swapKeysToValues(t_table, s_sentence)
+    -- Create a sorted list of keys, sorted by length in descending order
+    local sortedKeys = {}
+    for key in pairs(t_table) do
+        table.insert(sortedKeys, key)
+    end
+    table.sort(sortedKeys, function(a, b) return #a > #b end)
+
+    -- Iterate through the sentence word by word
+    local result = s_sentence:gsub("(%f[%w]%w+%f[%W])", function(match)
+        -- Search for the match in the keys, case-insensitively
+	    for _, key in ipairs(sortedKeys) do
+            if string.lower(match) == string.lower(key) then
+                local replacement = t_table[key]
+
+                -- Match case of replacement to match
+                if (string.upper(match) == match) or (countUppercase(match) > (#match/2) -1) then
+                    return string.upper(replacement)
+				else
+                    return replacement
+                end
+            end
+        end
+
+        -- If no match, return the original word
+        return match
+    end)
+
+    return result
+end
 
 	function playerHasBuff(buffTable)
 		for i = 1, 40 do
@@ -385,9 +673,22 @@ local defaultValues = {
 		return playerHasBuff(validBuffs)
 	end
 
+	function appendPhraseToTable(t_table, s_phrase)
+		for word in s_phrase:gmatch("%w+") do
+			table.insert(t_table, word)
+		end
+	end
 
-
-
+	function countUppercase(str)
+		local count = 0
+		for i = 1, #str do
+			local char = str:sub(i, i)
+			if char:match("%u") then
+				count = count + 1
+			end
+		end
+		return count
+	end
 --~ 
 
 
@@ -432,15 +733,16 @@ local defaultValues = {
 			if currentLanguage~="NONE" and not canSpeakOrUnderstand(currentLanguage) then
 				print("You can no longer speak that language.")
 				currentLanguage='NONE'
+				setTranslation(false,nil)
 			end
 		end
 	end
 
 ------- EVENT DECLARATIONS --------------------
 
-local frame = CreateFrame("Frame")
-frame:RegisterEvent("ADDON_LOADED")
-frame:SetScript("OnEvent", OnAddonLoaded)
+local onLoadFrame = CreateFrame("Frame")
+onLoadFrame:RegisterEvent("ADDON_LOADED")
+onLoadFrame:SetScript("OnEvent", OnAddonLoaded)
 
 local auraFrame = CreateFrame("Frame")
 auraFrame:RegisterEvent("UNIT_AURA")
@@ -498,5 +800,19 @@ languages = {
 		isRealLanguage=true,
 		translationFunction=encryptWords,
 		translationTable=canineTranslations
+	},
+	['DEMONIC'] = 
+	{
+		buffRequirements = nil,
+		isRealLanguage=true,
+		translationFunction=complexEncryptWords,
+		translationTable = demonicTranslations
+	},
+	['HORSE'] = 
+	{
+		buffRequirements = nil,
+		isRealLanguage=true,
+		translationFunction=encryptWords,
+		translationTable = horseTranslations
 	}
 }

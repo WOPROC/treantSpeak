@@ -65,6 +65,7 @@ local serial = LibStub("AceSerializer-3.0")
 		if(currentLanguage == "NONE") then
 		
 			partyMode=false
+			characterToTranslateTo = nil
 			fixedTarget=nil
 			title:SetText("Treant Speak+: Translator")
 			partyModeb:SetText("Party Mode: Off")
@@ -126,7 +127,7 @@ local serial = LibStub("AceSerializer-3.0")
 	
 	local function modifiedSendChatMessage(message, chatType, language, channel)
 		--Do we actually have a language on?
-		if currentLanguage ~= "NONE" then
+		if currentLanguage ~= "NONE"  then
 			
 
 			if (chatType=="PARTY" and treantSettings['speakLanguageInParty']) or chatType=="SAY" or chatType == "YELL" then
@@ -206,7 +207,7 @@ local function TreantSpeak()
 end
 
 local function treantBoxToggle()
-	frame:Show()
+	treeFrame:Show()
 end
 
 local function toggleBrokenFunc()

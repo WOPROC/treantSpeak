@@ -1,7 +1,7 @@
-## Interface: 110002
+## Interface: 11505, 40400, 11504
 ## Title: Treant_Speak
 ## Author: Zanalia
-## Version: 1.1.0
+## Version: 1.2.0
 ## Notes: Speak in the language of the superior race: Treants.
 ## IconTexture: Interface\AddOns\Treant_Speak\Resources\treant
 ## OptionalDeps: 

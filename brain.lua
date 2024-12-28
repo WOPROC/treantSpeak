@@ -723,7 +723,7 @@ end
         
 			else
 				print("Saved variables not found.")
-				treantSettings = defaultvalues
+				treantSettings = defaultValues
 			end
 	end
 
